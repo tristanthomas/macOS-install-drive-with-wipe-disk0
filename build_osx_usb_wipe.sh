@@ -9,10 +9,11 @@
 # WARNING: The wipe-disk0.sh script wipes disk0 if executed. It should only be executed under OS X Recovery from a bootable OS X USB install drive.
 
 # Verify that the Install OS X app exists
-CODENAME="Yosemite"
-OSX_INSTALLER=$(ls /Applications| grep "Install OS X $CODENAME" | awk '{print $4}' | sed 's/.app//')
+CODENAME=El\ Capitan
+OSX_INSTALLER=$(ls /Applications| grep -s Install\ OS\ X\ "$CODENAME" | sed 's/.app//')
 if [[  "${OSX_INSTALLER}" == "" ]] ; then
-	echo "\nPlease download the Install OS X $CODENAME app from the App Store then run this script again."
+	CODENAME_CLEAN=$(echo "$CODENAME" | sed 's/\\//g')
+	echo "\nPlease download the Install OS X "$CODENAME_CLEAN" app from the App Store then run this script again."
 	exit 134
 fi
 
@@ -45,7 +46,7 @@ case "$USB_COUNT" in
 esac
 
 # Display the target USB drive name, size, and partitions
-diskutil info $TARGET | tail -n +4 | sed '/Volume\ Name/,/SMART\ Status/d' | head -n 4 | awk '$1=$1' | sed G
+diskutil info $TARGET | grep -A 14 "Device / Media Name:" | sed '/Volume\ Name/,/SMART\ Status/d' | head -n 4 | awk '$1=$1' | sed G
 diskutil list $TARGET | tail -n +2
 
 # Confirm to proceed with formatting the target USB drive
@@ -57,15 +58,15 @@ if [[ "${CONTINUE}" == "YES" ]] ; then
 		exit 137
 	}
 	echo "\nTo proceed, enter your password.\n"
-	sudo /Applications/Install\ OS\ X\ $CODENAME.app/Contents/Resources/createinstallmedia --volume /Volumes/wipe --applicationpath /Applications/Install\ OS\ X\ $CODENAME.app --nointeraction || {
+	sudo /Applications/Install\ OS\ X\ "$CODENAME".app/Contents/Resources/createinstallmedia --volume /Volumes/wipe --applicationpath /Applications/Install\ OS\ X\ "$CODENAME".app --nointeraction || {
 		echo "\nFailed to create a bootable OS X USB install drive. Please try again."
 		exit 138
 	}
-	curl -s -o /Volumes/Install\ OS\ X\ $CODENAME/wipe-disk0.sh https://raw.githubusercontent.com/tristanthomas/mac-wipe-disk0/master/wipe-disk0.sh || {
+	curl -s -o /Volumes/Install\ OS\ X\ "$CODENAME"/wipe-disk0.sh https://raw.githubusercontent.com/tristanthomas/mac-wipe-disk0/master/wipe-disk0.sh || {
 		echo "\nFailed to download the wipe-disk0.sh script. Please connect to the Internet then run this script again."
 		exit 139
 	}
-	chmod +x /Volumes/Install\ OS\ X\ $CODENAME/wipe-disk0.sh
+	chmod +x /Volumes/Install\ OS\ X\ "$CODENAME"/wipe-disk0.sh
 else
 	echo "\nA confirmation to proceed was not provided. The USB drive ${TARGET[$SELECT]} was not modified.\n"
 	exit 140
