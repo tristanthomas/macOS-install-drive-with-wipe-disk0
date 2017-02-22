@@ -1,19 +1,19 @@
 #!/bin/sh
 
-# This Source Code Form is subject to the terms of the Mozilla Public
+# This Source Code Form is subject to the terms of the Mozilla Developer
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# This script creates a bootable OS X USB install drive and downloads the wipe-disk0.sh script to the USB drive.
+# This script creates a bootable macOS USB install drive and downloads the wipe-disk0.sh script to the USB drive.
 
-# WARNING: The wipe-disk0.sh script wipes disk0 if executed. It should only be executed under OS X Recovery from a bootable OS X USB install drive.
+# WARNING: The wipe-disk0.sh script wipes disk0 if executed. It should only be executed under macOS Recovery from a bootable macOS USB install drive.
 
-# Verify that the Install OS X app exists
-CODENAME=El\ Capitan
-OSX_INSTALLER=$(ls /Applications| grep -s Install\ OS\ X\ "$CODENAME" | sed 's/.app//')
+# Verify that the Install macOS app exists
+CODENAME=macOS\ Sierra
+OSX_INSTALLER=$(ls /Applications| grep -s Install\ "$CODENAME" | sed 's/.app//')
 if [[  "${OSX_INSTALLER}" == "" ]] ; then
 	CODENAME_CLEAN=$(echo "$CODENAME" | sed 's/\\//g')
-	echo "\nPlease download the Install OS X "$CODENAME_CLEAN" app from the App Store then run this script again."
+	echo "\nPlease download the Install "$CODENAME_CLEAN" app from the App Store then run this script again."
 	exit 134
 fi
 
@@ -58,15 +58,15 @@ if [[ "${CONTINUE}" == "YES" ]] ; then
 		exit 137
 	}
 	echo "\nTo proceed, enter your password.\n"
-	sudo /Applications/Install\ OS\ X\ "$CODENAME".app/Contents/Resources/createinstallmedia --volume /Volumes/wipe --applicationpath /Applications/Install\ OS\ X\ "$CODENAME".app --nointeraction || {
-		echo "\nFailed to create a bootable OS X USB install drive. Please try again."
+	sudo /Applications/Install\ "$CODENAME".app/Contents/Resources/createinstallmedia --volume /Volumes/wipe --applicationpath /Applications/Install\ "$CODENAME".app --nointeraction || {
+		echo "\nFailed to create a bootable $CODENAME_CLEAN USB install drive. Please try again."
 		exit 138
 	}
-	curl -s -o /Volumes/Install\ OS\ X\ "$CODENAME"/wipe-disk0.sh https://raw.githubusercontent.com/tristanthomas/mac-wipe-disk0/master/wipe-disk0.sh || {
+	curl -s -o /Volumes/Install\ "$CODENAME"/wipe-disk0.sh https://raw.githubusercontent.com/tristanthomas/mac-wipe-disk0/master/wipe-disk0.sh || {
 		echo "\nFailed to download the wipe-disk0.sh script. Please connect to the Internet then run this script again."
 		exit 139
 	}
-	chmod +x /Volumes/Install\ OS\ X\ "$CODENAME"/wipe-disk0.sh
+	chmod +x /Volumes/Install\ "$CODENAME"/wipe-disk0.sh
 else
 	echo "\nA confirmation to proceed was not provided. The USB drive ${TARGET[$SELECT]} was not modified.\n"
 	exit 140
