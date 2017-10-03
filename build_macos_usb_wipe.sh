@@ -9,9 +9,9 @@
 # WARNING: The wipe-disk0.sh script wipes disk0 if executed. It should only be executed under macOS Recovery from a bootable macOS USB install drive.
 
 # Verify that the Install macOS app exists
-CODENAME=macOS\ Sierra
-OSX_INSTALLER=$(ls /Applications| grep -s Install\ "$CODENAME" | sed 's/.app//')
-if [[  "${OSX_INSTALLER}" == "" ]] ; then
+CODENAME=macOS\ High\ Sierra
+MACOS_INSTALLER=$(ls /Applications| grep -s Install\ "$CODENAME" | sed 's/.app//')
+if [[  "${MACOS_INSTALLER}" == "" ]] ; then
 	CODENAME_CLEAN=$(echo "$CODENAME" | sed 's/\\//g')
 	echo "\nPlease download the Install "$CODENAME_CLEAN" app from the App Store then run this script again."
 	exit 134
@@ -58,7 +58,7 @@ if [[ "${CONTINUE}" == "YES" ]] ; then
 		exit 137
 	}
 	echo "\nTo proceed, enter your password.\n"
-	sudo /Applications/Install\ "$CODENAME".app/Contents/Resources/createinstallmedia --volume /Volumes/wipe --applicationpath /Applications/Install\ "$CODENAME".app --nointeraction || {
+	sudo /Applications/Install\ "$CODENAME".app/Contents/Resources/createinstallmedia --nointeraction --volume /Volumes/wipe || {
 		echo "\nFailed to create a bootable $CODENAME_CLEAN USB install drive. Please try again."
 		exit 138
 	}
