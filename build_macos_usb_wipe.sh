@@ -4,7 +4,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# This script creates a bootable macOS USB install drive and downloads the wipe-disk0.sh script to the USB drive.
+# This script creates a bootable macOS USB install drive and downloads the wipe-disk0.sh and dinobuildr.sh script to the USB drive.
 
 # WARNING: The wipe-disk0.sh script wipes disk0 if executed. It should only be executed under macOS Recovery from a bootable macOS USB install drive.
 
@@ -67,7 +67,12 @@ if [[ "${CONTINUE}" == "YES" ]] ; then
 		exit 139
 	}
 	chmod +x /Volumes/Install\ "$CODENAME"/wipe-disk0.sh
+	curl -s -o /Volumes/Install\ "$CODENAME"/dinobuildr.sh https://raw.githubusercontent.com/mozilla/dinobuildr/master/dinobuildr.sh || {
+		echo "\nFailed to download the dinobuildr.sh script. Please connect to the Internet then run this script again."
+		exit 140
+	}
+	chmod +x /Volumes/Install\ "$CODENAME"/dinobuildr.sh
 else
 	echo "\nA confirmation to proceed was not provided. The USB drive ${TARGET[$SELECT]} was not modified.\n"
-	exit 140
+	exit 141
 fi
